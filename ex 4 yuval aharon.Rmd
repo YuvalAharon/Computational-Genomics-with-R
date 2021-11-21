@@ -143,5 +143,56 @@ gseaResults <- gage(exprs = log2(normalizedCounts+1),
                     samp = match(rownames(colData[colData$group == 'CASE',]),
                                  colnames(normalizedCounts)),
                     gsets = geneSets, compare = 'as.group')
+summary(gseaResults)
+
+gseaResults2 = gage(exprs = log2(normalizedCounts+1),
+                    ref = match(rownames(colData[colData$group =='CTRL',]),
+                                colnames(normalizedCounts)),
+                    samp = match(rownames(colData[colData$group == 'CASE',]),
+                                 colnames(normalizedCounts)),
+                    gsets = geneSets, compare = 'paired')
+summary(gseaResults2)
 ```
 
+3.
+```{r}
+goResults <- gprofiler(query = genesOfInterest,
+                       organism = 'hsapiens',
+                       src_filter = 'CORUM',
+                       hier_filtering = 'moderate',
+                       significant = F)
+plot(goResults$term.size,-log10(goResults$p.value))
+
+
+```
+
+4.
+```{r Do a gene-set enrichment analysis using gene sets from top 10 GO terms}
+
+if (!requireNamespace("BiocManager", quietly=TRUE))
++ install.packages("BiocManager")
+BiocManager::install("topGO")
+
+
+topgeneSet1 <- unlist(strsplit(go[1,]$intersection, ','))
+topgeneSet2 <- unlist(strsplit(go[2,]$intersection, ','))
+topgeneSet3 <- unlist(strsplit(go[3,]$intersection, ','))
+topgeneSet4 <- unlist(strsplit(go[4,]$intersection, ','))
+topgeneSet5 <- unlist(strsplit(go[5,]$intersection, ','))
+topgeneSet6 <- unlist(strsplit(go[6,]$intersection, ','))
+topgeneSet7 <- unlist(strsplit(go[7,]$intersection, ','))
+topgeneSet8 <- unlist(strsplit(go[8,]$intersection, ','))
+topgeneSet9 <- unlist(strsplit(go[9,]$intersection, ','))
+topgeneSet10 <- unlist(strsplit(go[10,]$intersection, ','))
+
+allgeneSets <- list('GO_term1' = topgeneSet1, 'GO_term2' = topgeneSet2, 'GO_term3' = topgeneSet3, 'GO_term4' = topgeneSet4, 'GO_term5' = topgeneSet5, 'GO_term6' = topgeneSet6, 'GO_term7' = topgeneSet7,'GO_term8' = topgeneSet8, 'GO_term9' = topgeneSet9, 'GO_term10' = topgeneSet10,'random_set' = geneSet2)
+
+gseaResults2 <- gage(exprs = log2(normalizedCounts+1),
+                    ref = match(rownames(colData[colData$group =='CTRL',]),
+                                colnames(normalizedCounts)),
+                    samp = match(rownames(colData[colData$group == 'CASE',]),
+                                 colnames(normalizedCounts)),
+                    gsets = geneSets, compare = 'as.group')
+
+summary(gseaResults2)
+```
