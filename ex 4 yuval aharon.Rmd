@@ -68,6 +68,8 @@ goResults <- gprofiler(query = genesOfInterest,
                        hier_filtering = 'moderate')
 
 goResults = goResults[order(goResults$p.value),]
+goResults = goResults[order(goResults$precision),]
+goResults = goResults[order(goResults$recall),]
 ```
 
 1.
@@ -81,6 +83,7 @@ goResults2 <- gprofiler(query = genesOfInterest,
 
 goResults2 = goResults2[order(goResults2$p.value),]
 goResults2 = goResults2[order(goResults2$precision),]
+goResults2 = goResults[order(goResults$recall),]
 ```
 
 ```{r}
@@ -93,6 +96,7 @@ goResults3 <- gprofiler(query = genesOfInterest,
 
 goResults3 = goResults3[order(goResults3$p.value),]
 goResults3 = goResults3[order(goResults3$precision),]
+goResults3 = goResults[order(goResults$recall),]
 ```
 
 ```{r}
@@ -105,6 +109,7 @@ goResults4 <- gprofiler(query = genesOfInterest,
 
 goResults4 = goResults4[order(goResults4$p.value),]
 goResults4 = goResults4[order(goResults4$precision),]
+goResults4 = goResults[order(goResults$recall),]
 ```
 
 2.
@@ -133,11 +138,10 @@ geneSets <- list('top_GO_term' = geneSet1,
 # samples with respect to the control samples.
 #Use the normalized counts to carry out a GSEA.
 gseaResults <- gage(exprs = log2(normalizedCounts+1),
-ref = match(rownames(colData[colData$group =='CTRL',]),
-colnames(normalizedCounts)),
-samp = match(rownames(colData[colData$group == 'CASE',]),
-2
-colnames(normalizedCounts)),
-gsets = geneSets, compare = 'as.group')
-
+                    ref = match(rownames(colData[colData$group =='CTRL',]),
+                                colnames(normalizedCounts)),
+                    samp = match(rownames(colData[colData$group == 'CASE',]),
+                                 colnames(normalizedCounts)),
+                    gsets = geneSets, compare = 'as.group')
+```
 
