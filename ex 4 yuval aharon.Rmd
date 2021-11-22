@@ -218,3 +218,18 @@ GOdata <- new("topGOdata",
 	annot = annFUN.org , mapping = "annFUN.db")
 
 ```
+
+7.
+```{r}
+BiocManager::install("biomaRt")
+library(biomaRt)
+Sys.setenv("http_proxy" = "http://my.proxy.org:9999")
+options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:-------"))
+
+human = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+C.elegans = biomaRt::useMart("ensembl", dataset = "celegans_gene_ensembl")
+biomaRt::getLDS(attributes = c("hgnc_symbol","chromosome_name","start_position"),
+       filters = "hgnc_symbol", values = "TP53",mart = human,
+      attributesL = c("refseq_peptide","chromosome_name","start_position"), martL = C.elegans)
+```
+
