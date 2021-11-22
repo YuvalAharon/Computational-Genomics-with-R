@@ -196,3 +196,27 @@ gseaResults2 <- gage(exprs = log2(normalizedCounts+1),
 
 summary(gseaResults2)
 ```
+
+5.
+among the packages i found: EGSEA, topGO, fgsea, MAVTgsa and RGSEA.
+
+6.
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("annFUN.db")
+
+library(topGO)
+
+pvalforGO = DE[genesOfInterest,"pvalue"]
+names(pvalforGO) = genesOfInterest
+
+# Create topGOData object
+GOdata <- new("topGOdata",
+	ontology = "BP",
+	allGenes = pvalforGO,
+	geneSelectionFun = function(x)x,
+	annot = annFUN.org , mapping = "annFUN.db")
+
+```
