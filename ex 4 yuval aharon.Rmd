@@ -202,12 +202,10 @@ among the packages i found: EGSEA, topGO, fgsea, MAVTgsa and RGSEA.
 
 6.
 ```{r}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
+BiocManager::install("topGO")
 BiocManager::install("annFUN.db")
-
 library(topGO)
+library(annFUN.db)
 
 pvalforGO = DE[genesOfInterest,"pvalue"]
 names(pvalforGO) = genesOfInterest
