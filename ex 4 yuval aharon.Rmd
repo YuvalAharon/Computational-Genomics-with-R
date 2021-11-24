@@ -192,31 +192,57 @@ gseaResults2 <- gage(exprs = log2(normalizedCounts+1),
                                 colnames(normalizedCounts)),
                     samp = match(rownames(colData[colData$group == 'CASE',]),
                                  colnames(normalizedCounts)),
-                    gsets = geneSets, compare = 'as.group')
+                    gsets = allgeneSets, compare = 'as.group')
 
 summary(gseaResults2)
+
 ```
 
 5.
 among the packages i found: EGSEA, topGO, fgsea, MAVTgsa and RGSEA.
 
 6.
-```{r}
-BiocManager::install("topGO")
-BiocManager::install("annFUN.db")
-library(topGO)
-library(annFUN.db)
 
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("topGO")
+```
+
+
+
+```{r}
+library(topGO)
+BiocManager::install("org.Hs.eg.db")
+library(org.Hs.eg.db)
 pvalforGO = DE[genesOfInterest,"pvalue"]
 names(pvalforGO) = genesOfInterest
 
 # Create topGOData object
-GOdata <- new("topGOdata",
-	ontology = "BP",
-	allGenes = pvalforGO,
-	geneSelectionFun = function(x)x,
-	annot = annFUN.org , mapping = "annFUN.db")
 
+selection <- function(allScore){ return(allScore < 0.05)} # function that returns TRUE/FALSE for p-values<0.05
+allGO2genes <- annFUN.org(whichOnto="BP", feasibleGenes=NULL, mapping="org.Hs.eg.db", ID="symbol")
+GOdata <- new("topGOdata",
+  ontology="BP",
+  allGenes=pvalforGO,
+  annot=annFUN.GO2genes,
+  GO2genes=allGO2genes,
+  geneSel=selection,
+  nodeSize=10)
+
+#In order to make use of the rank information, use Kolmogorov-Smirnov (K-S) test:
+results.ks <- runTest(GOdata, algorithm="classic", statistic="ks")
+goEnrichment <- GenTable(GOdata, KS=results.ks, orderBy="KS", topNodes=20)
+goEnrichment$KS <- as.numeric(goEnrichment$KS)
+goEnrichment <- goEnrichment[goEnrichment$KS<0.05,]
+goEnrichment <- goEnrichment[,c("GO.ID","Term","KS")]
+goEnrichment$Term <- gsub(" [a-z]*\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- gsub("\\.\\.\\.$", "", goEnrichment$Term)
+goEnrichment$Term <- paste(goEnrichment$GO.ID, goEnrichment$Term, sep=", ")
+goEnrichment$Term <- factor(goEnrichment$Term, levels=rev(goEnrichment$Term))
+
+summary(goEnrichment)
 ```
 
 7.
@@ -233,3 +259,43 @@ biomaRt::getLDS(attributes = c("hgnc_symbol","chromosome_name","start_position")
       attributesL = c("refseq_peptide","chromosome_name","start_position"), martL = C.elegans)
 ```
 
+8.
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("org.Mm.eg.db")
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("gseKEGG")
+
+BiocManager::install("gseKEGG")
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("gage")
+
+```
+
+```{r}
+install.packages("msigdbr")
+library(msigdbr)
+msigdbr_df <- msigdbr(species = "human", category = "C2")
+msigdbrEntrez = as.list(msigdbr_df$entrez_gene)
+
+gseaResults3 <-gage::gage(exprs = log2(normalizedCounts+1),
+                    ref = match(rownames(colData[colData$group =='CTRL',]),
+                                colnames(normalizedCounts)),
+                    samp = match(rownames(colData[colData$group == 'CASE',]),
+                                 colnames(normalizedCounts)),
+                    gsets = msigdbrEntrez, compare = 'as.group')
+summary(gseaResults3)
+```
+
+```{r}
+
+
+
+```
