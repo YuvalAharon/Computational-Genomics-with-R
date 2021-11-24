@@ -293,9 +293,5 @@ gseaResults3 <-gage::gage(exprs = log2(normalizedCounts+1),
                     gsets = msigdbrEntrez, compare = 'as.group')
 summary(gseaResults3)
 ```
-
-```{r}
-
-
-
-```
+link to your Github account here:
+https://github.com/YuvalAharon/Computational-Genomics-with-R.git
