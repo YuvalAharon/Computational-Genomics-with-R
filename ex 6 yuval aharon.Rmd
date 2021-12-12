@@ -1,0 +1,73 @@
+---
+title: "Exercise 6"
+author: "yuval aharon"
+date: "12 12 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+expFile=system.file("extdata",
+                    "leukemiaExpressionSubset.rds",
+                    package="compGenomRData")
+
+mat=readRDS(expFile)
+```
+
+```{r}
+boxplot(mat)
+
+scaledMat = scale(mat)
+boxplot(scaledMat)
+
+logMat = log2(mat)
+boxplot(logMat)
+
+scaledLogMat = scale(logMat)
+boxplot(scaledLogMat)
+
+```
+
+```{r}
+library(pheatmap)
+
+# set the leukemia type annotation for each sample
+annotation_col = data.frame(
+                    LeukemiaType =substr(colnames(mat),1,3))
+rownames(annotation_col)=colnames(mat)
+
+
+pheatmap(mat,show_rownames=FALSE,show_colnames=FALSE,
+         annotation_col=annotation_col,
+         scale = "none",
+         clustering_method="ward.D",
+         main = "mat without scaling")
+
+pheatmap(scaledMat,show_rownames=FALSE,show_colnames=FALSE,
+         annotation_col=annotation_col,
+         scale = "none",
+         clustering_method="ward.D",
+         main = "mat with scaling")
+
+pheatmap(logMat,show_rownames=FALSE,show_colnames=FALSE,
+         annotation_col=annotation_col,
+         scale = "none",
+         clustering_method="ward.D",
+         main = "log scaled mat")
+
+pheatmap(scaledLogMat,show_rownames=FALSE,show_colnames=FALSE,
+         annotation_col=annotation_col,
+         scale = "none",
+         clustering_method="ward.D",
+         main = "mat with scaling and log")
+
+```
+
+3.
+```{r}
+
+```
+
