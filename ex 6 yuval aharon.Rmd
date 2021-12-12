@@ -68,6 +68,18 @@ pheatmap(scaledLogMat,show_rownames=FALSE,show_colnames=FALSE,
 
 3.
 ```{r}
-
+library(cluster)
+set.seed(101)
+pamclu=cluster::pam(t(mat),k=5)
+plot(silhouette(pamclu),main=NULL)
 ```
+
+```{r}
+Ks=sapply(2:7,
+    function(i) 
+      summary(silhouette(pam(t(mat),k=i)))$avg.width)
+plot(2:7,Ks,xlab="k",ylab="av. silhouette",type="b",
+     pch=19)
+```
+
 
