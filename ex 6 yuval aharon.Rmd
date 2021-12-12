@@ -149,4 +149,4 @@ legend("bottomleft",
        fill =palette("default"),
        border=NA,box.col=NA)
 ```
-
+the way i see it, larger perplexity produce clearer clusters. it is more clear when looking at the cluster produced at  perplexity = 1 that there are no clusters, compare with  perplexity = 19 that the clusters are very clear.  
