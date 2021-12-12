@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+###Clustering: Grouping samples based on their similarity###
 ```{r}
 expFile=system.file("extdata",
                     "leukemiaExpressionSubset.rds",
@@ -97,4 +98,55 @@ plot(2:7,Ks,xlab="k",ylab="av. silhouette",type="b",
      pch=19)
 ```
 
+###Dimension reduction###
+1.
+```{r}
+pr=princomp(scale(mat))
+screeplot(pr)
+
+#PCA
+library(stats)
+library(ggplot2) 
+# install.packages("ggfortify") ggfortify is needed to let ggplot2 know about PCA data structure.
+library(ggfortify)
+
+#compute PCA
+pcaResults <- prcomp(t(logMat))
+autoplot(pcaResults, data = annotation_col, colour = 'LeukemiaType')
+```
+
+2.
+```{r}
+library("Rtsne")
+set.seed(42) # Set a seed if you want reproducible results
+
+tsne_out <- Rtsne(t(scaledLogMat),perplexity = 10) # Run TSNE
+
+#image(t(as.matrix(dist(tsne_out$Y))))
+# Show the objects in the 2D tsne representation
+plot(tsne_out$Y,col=as.factor(annotation_col$LeukemiaType),
+     pch=19)
+
+# create the legend for the Leukemia types
+legend("bottomleft",
+       legend=unique(annotation_col$LeukemiaType),
+       fill =palette("default"),
+       border=NA,box.col=NA)
+
+tsne_out <- Rtsne(t(scaledLogMat),perplexity = 1) 
+plot(tsne_out$Y,col=as.factor(annotation_col$LeukemiaType),
+     pch=19)
+legend("bottomleft",
+       legend=unique(annotation_col$LeukemiaType),
+       fill =palette("default"),
+       border=NA,box.col=NA)
+
+tsne_out <- Rtsne(t(scaledLogMat),perplexity =19) 
+plot(tsne_out$Y,col=as.factor(annotation_col$LeukemiaType),
+     pch=19)
+legend("bottomleft",
+       legend=unique(annotation_col$LeukemiaType),
+       fill =palette("default"),
+       border=NA,box.col=NA)
+```
 
