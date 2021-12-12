@@ -69,12 +69,27 @@ pheatmap(scaledLogMat,show_rownames=FALSE,show_colnames=FALSE,
 3.
 ```{r}
 library(cluster)
+#for transformed data.
+set.seed(101)
+pamclu=cluster::pam(t(scaledLogMat),k=5)
+plot(silhouette(pamclu),main=NULL)
+
+# for untransformed data.
 set.seed(101)
 pamclu=cluster::pam(t(mat),k=5)
 plot(silhouette(pamclu),main=NULL)
+
 ```
 
 ```{r}
+# for transformed data.
+Ks=sapply(2:7,
+    function(i) 
+      summary(silhouette(pam(t(scaledLogMat),k=i)))$avg.width)
+plot(2:7,Ks,xlab="k",ylab="av. silhouette",type="b",
+     pch=19)
+
+# for untransformed data.
 Ks=sapply(2:7,
     function(i) 
       summary(silhouette(pam(t(mat),k=i)))$avg.width)
