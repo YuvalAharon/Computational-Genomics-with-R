@@ -33,9 +33,8 @@ head(patient)
 dim(patient)
 ```
 
-1.
-```{r}
-install.packages("RANN")
+
+```{r example from the exercise}
 install.packages("caret")
 library(caret)
 boxplot(gexp[,1:50],outline=FALSE,col="cornflowerblue")
@@ -139,4 +138,53 @@ testPred=predict(knnFit,testing[,-1],type="class")
 # get different performance metrics
 confusionMatrix(data=testing[,1],reference=testPred)
 ```
+
+1.
+# k-nn Without any transformation or scaling #
+```{r}
+tgexp <- t(gexp)
+nzv=preProcess(tgexp,method="nzv",uniqueCut = 15)
+nzv_tgexp=predict(nzv,tgexp)
+dim(tgexp)
+dim(nzv_tgexp)
+tgexp <- nzv_tgexp
+
+SDs=apply(tgexp,2,sd )
+topPreds=order(SDs,decreasing = TRUE)[1:1000]
+tgexp=tgexp[,topPreds]
+corrFilt=preProcess(tgexp, method = "corr",cutoff = 0.9)
+tgexp=predict(corrFilt,tgexp)
+anyNA(tgexp)
+
+tgexp=merge(patient,tgexp,by="row.names")
+rownames(tgexp)=tgexp[,1]
+tgexp=tgexp[,-1]
+
+set.seed(3031) # set the random number seed for reproducibility
+intrain <- createDataPartition(y = tgexp[,1], p= 0.7)[[1]] # get indices for 70% of the data set
+
+training <- tgexp[intrain,]
+testing <- tgexp[-intrain,]
+
+knnFit=knn3(x=training[,-1], # training set
+            y=training[,1], # training set class labels
+            k=5)
+# predictions on the test set
+trainPred=predict(knnFit,testing[,-1])
+
+# predictions on the training set
+trainPred=predict(knnFit,training[,-1],type="class")
+
+# compare the predicted labels to real labels
+# get different performance metrics
+confusionMatrix(data=training[,1],reference=trainPred)
+
+# predictions on the test set, return class labels
+testPred=predict(knnFit,testing[,-1],type="class")
+
+# compare the predicted labels to real labels
+# get different performance metrics
+confusionMatrix(data=testing[,1],reference=testPred)
+```
+
 
