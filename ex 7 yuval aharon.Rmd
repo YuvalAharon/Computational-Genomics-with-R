@@ -232,6 +232,8 @@ plot(ameth$Age,(rfregFit$finalModel$predictions-ameth$Age),
 pch=18,ylab="residuals (predicted-observed)",
 xlab="observed Age",col="blue3")
 abline(h=0,col="red4",lty=2)
+
+plot(varImp(rfregFit),top=10)
 ```
 
 
