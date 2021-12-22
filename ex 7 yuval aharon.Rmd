@@ -187,4 +187,49 @@ testPred=predict(knnFit,testing[,-1],type="class")
 confusionMatrix(data=testing[,1],reference=testPred)
 ```
 
+2.
+```{r}
+# file path for CpG methylation and age
+fileMethAge=system.file("extdata",
+                      "CpGmeth2Age.rds",
+                      package="compGenomRData")
+
+# read methylation-age table
+ameth=readRDS(fileMethAge)
+dim(ameth)
+summary(ameth[,1:3])
+
+# plot histogram of methylation values
+hist(unlist(ameth[,-1]),border="white",
+col="cornflowerblue",main="",xlab="methylation values")
+
+#We will remove CpGs that have less than 0.1 standard deviation.
+ameth=ameth[,c(TRUE,matrixStats::colSds(as.matrix(ameth[,-1]))>0.1)]
+dim(ameth)
+
+set.seed(18)
+par(mfrow=c(1,2))
+trctrl <- trainControl(method = "none")
+
+# we will now train random forest model
+rfregFit <- train(Age~.,data = ameth,method = "ranger",
+                  trControl=trctrl,
+                  importance="permutation",# calculate importance
+                  tuneGrid = data.frame(mtry=50,
+                                        min.node.size = 5,
+                                        splitrule="variance")
+                  )
+plot(ameth$Age,rfregFit$finalModel$predictions,
+pch=19,xlab="observed Age",
+ylab="OOB predicted Age")
+mtext(paste("R-squared",
+format(rfregFit$finalModel$r.squared,digits=2)))
+
+plot(ameth$Age,(rfregFit$finalModel$predictions-ameth$Age),
+pch=18,ylab="residuals (predicted-observed)",
+xlab="observed Age",col="blue3")
+abline(h=0,col="red4",lty=2)
+```
+
+
 
