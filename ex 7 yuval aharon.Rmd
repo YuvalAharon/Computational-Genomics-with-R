@@ -142,6 +142,9 @@ confusionMatrix(data=testing[,1],reference=testPred)
 1.
 # k-nn Without any transformation or scaling #
 ```{r}
+# gene expression values
+gexp=readRDS(fileLGGexp)
+
 tgexp <- t(gexp)
 nzv=preProcess(tgexp,method="nzv",uniqueCut = 15)
 nzv_tgexp=predict(nzv,tgexp)
