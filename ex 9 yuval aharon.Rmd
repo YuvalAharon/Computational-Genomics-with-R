@@ -1,0 +1,79 @@
+---
+title: "ex 9 yuval aharon"
+author: "yuval aharon"
+date: "5 1 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, eval=TRUE}
+# Install depmap and ExperimentHub libraries
+# Please change eval parameter to eval=TRUE in your computer
+
+BiocManager::install("depmap")
+BiocManager::install("ExperimentHub")
+install.packages("dplyr")
+```
+
+```{r}
+# Load packages
+# Please install missing packages if needed
+
+install.packages("viridis")
+library("dplyr")
+library("ggplot2")
+library("viridis")
+library("tibble")
+library("gridExtra")
+library("stringr")
+library("depmap")
+library("ExperimentHub")
+```
+
+```{r}
+# An example for accessing Depmap data using *ExperimentHub* package 
+
+eh <- ExperimentHub()
+query(eh, "depmap")
+
+rnai <- eh[["EH3080"]]
+crispr <- eh[["EH3081"]]
+mutationCalls <- eh[["EH3085"]]
+metadata <- eh[["EH3086"]]
+TPM <- eh[["EH3084"]]
+copyNumber <- eh[["EH3082"]]
+drug_sensitivity_eh <- eh[["EH3087"]]
+```
+
+```{r}
+metadata %>%
+        dplyr::select(depmap_id, lineage) %>%
+        dplyr::full_join(TPM, by = "depmap_id") %>%
+        dplyr::filter(gene_name == "RPL14") %>%
+        ggplot(aes(x = lineage, y = expression, fill = lineage)) +
+        geom_boxplot(outlier.alpha = 0.1) +
+        ggtitle("Boxplot of expression values for gene RPL14 by lineage") +
+        theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+        theme(legend.position = "none")
+```
+
+
+
+
+
+```{r}
+metadata %>%
+        dplyr::select(depmap_id, lineage) %>%
+        dplyr::full_join(copyNumber, by = "depmap_id") %>%
+        dplyr::filter(gene_name == "RPL14") %>%
+        ggplot(aes(x = lineage, y = log_copy_number, fill = lineage)) +
+        geom_boxplot(outlier.alpha = 0.1) +
+        ggtitle("Boxplot of log genomic copy number for gene RPL14 by lineage") +
+        theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+        theme(legend.position = "none")
+```
+
+
